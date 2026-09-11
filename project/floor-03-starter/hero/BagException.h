@@ -29,17 +29,16 @@ public:
     BagException(std::size_t bad_index, std::size_t bag_size) {
         // TODO Floor 3 (Fri): build msg_ here. The usual recipe:
         //
-        //     std::ostringstream oss;
-        //     oss << "index " << bad_index << " out of bounds for size "
-        //         << bag_size;
-        //     msg_ = oss.str();
-        //
+             std::ostringstream oss;
+             oss << "index " << bad_index << " out of bounds for size "
+                 << bag_size;
+             msg_ = oss.str();
+        
         // Why build the message here, in the constructor, and not inside
         // what()? Because what() must be noexcept (see the override
         // below) — you cannot safely do string work in there. Build
         // once, store, hand out a pointer.
-        (void)bad_index;
-        (void)bag_size;
+        
     }
 
     // Override the std::exception "what's wrong" virtual. MUST be
@@ -51,7 +50,7 @@ public:
         // c_str() hands out a pointer into msg_'s internal storage. The
         // pointer stays valid as long as the BagException (and thus its
         // msg_ member) lives — typically until the catch block ends.
-        return "TODO: BagException::what() not yet implemented (Floor 3 Fri)";
+        return msg_.c_string();
     }
 
 private:

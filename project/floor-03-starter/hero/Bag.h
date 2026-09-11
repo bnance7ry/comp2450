@@ -66,14 +66,18 @@ public:
     const T& operator[](std::size_t i) const {
         // TODO Floor 3 (Wed): return element at index i, unchecked.
         // One-line delegate to the underlying std::vector<T>.
-        (void)i;
-        throw std::logic_error("TODO: Bag::operator[] not yet implemented (Floor 3 Wed)");
+        if (i >= size()) {
+			throw BagException(i, size());
+        }
+        return data_[i];
     }
 
     T& operator[](std::size_t i) {
         // TODO Floor 3 (Wed): same as the const version, non-const.
-        (void)i;
-        throw std::logic_error("TODO: Bag::operator[] not yet implemented (Floor 3 Wed)");
+        if (i >= size()) {
+            throw BagException(i, size());
+        }
+        return data_[i];
     }
 
     // ---- access — checked ----------------------------------------------
