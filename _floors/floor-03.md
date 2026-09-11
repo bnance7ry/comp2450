@@ -51,7 +51,7 @@ By the end of Floor 3 you will be able to:
 - Define a **custom exception** that inherits from `std::exception` and overrides `what()`.
 - Distinguish `operator[]` (no bounds check, fast) from `at()` (bounds check, throws).
 - Catch a thrown exception at the right level; predict what happens if the exception escapes `main`.
-- Read a wall-of-text template compiler error and locate the one line that actually tells you what went wrong.
+- Read a template compiler error: find the one line that names the real problem, then trace it from the header the compiler blames back to the line you actually got wrong.
 
 ## Pre-class
 
@@ -60,10 +60,10 @@ By the end of Floor 3 you will be able to:
 **Read all of Chapters 4 and 5.** Both chapters in full are the assignment, even the parts class doesn't cover directly. The day-by-day pointers below are the sections *class time* leans on — not the boundary of what you're responsible for.
 
 Before **Monday**: §4.1 Function templates; §4.2 Class templates
-Before **Wednesday**: §4.3 C++ example — map values using a function template (the worked example ties Monday and Wednesday together); §4.4 *LAB: What order? (function templates)* and §4.5 *LAB: Pairs (class templates)* — the chapter closes with two zyLabs, one per kind of template, and they are the closest the book comes to writing `findByName<T>` and `Bag<T>` yourself
-Before **Friday**: §5.1 Handling exceptions (`try` / `catch`); §5.2 Throwing exceptions; §5.4 User-defined exceptions; skim §5.5 (a second worked example); and §5.6 *LAB: Exceptions with vectors*, which is `Bag<T>::at()` bounds-checking in miniature
+Before **Wednesday**: §4.3 C++ example — map values using a function template (the worked example ties Monday and Wednesday together)
+Before **Friday**: §5.1 Handling exceptions (`try` / `catch`); §5.2 Throwing exceptions; §5.4 User-defined exceptions; skim §5.5 (a second worked example)
 
-We don't touch files in class this week, so §5.3 (exceptions with files) and §5.7 (*LAB: Exceptions with read-only files*) won't come up in lecture — but both are part of Chapter 5, so work them on your own.
+We don't touch files in class this week, so §5.3 (exceptions with files) won't come up in lecture — but it's part of Chapter 5, so read it on your own.
 
 Work the Question Sets and Animations inside each section. The §4.2 animation of a class template being stamped for two different types is exactly what will happen to `Bag<T>` on Wednesday — watch it twice.
 
@@ -99,40 +99,81 @@ Demo target (Friday):
 
 ```
 > inventory
-  1.  Rusty sword       (wt 4.0, val 5)
-  2.  Healing potion    (wt 0.5, val 12)
-  3.  Iron key          (wt 0.1, val 0)
-  4.  Loaf of bread     (wt 0.1, val 1)
-  5.  Cloak of shadows  (wt 1.5, val 80)
-> bestiary
-  1.  Goblin            HP 8   ATK 2   weakness: fire
-  2.  Kobold            HP 5   ATK 1   weakness: cold
-  3.  Lich              HP 30  ATK 6   weakness: radiant
-  ...
-  (same Bag<T> — different T)
+   1.  Rusty sword       (wt 4.0, val 5)
+   2.  Healing potion    (wt 0.5, val 12)
+   3.  Iron key          (wt 0.1, val 0)
+   4.  Loaf of bread     (wt 0.1, val 1)
+   5.  Cloak of shadows  (wt 1.5, val 80)
+> list
+Bone Spider   HP 6   ATK 2   weakness: fire
+Cave Troll   HP 28   ATK 7   weakness: fire
+Cinder Bat   HP 4   ATK 1   weakness: water
+Frostmaw   HP 22   ATK 6   weakness: fire
+Goblin   HP 8   ATK 2   weakness: fire
+   ... (all 15 monsters, sorted by name)
+Wraith   HP 14   ATK 4   weakness: holy
+   (same Bag<T> — different T)
 > search Goblin
-  Goblin   HP 8   ATK 2   weakness: fire
+Goblin   HP 8   ATK 2   weakness: fire
 > search Iron key
   Iron key          (wt 0.1, val 0)
-  (same findByName<T>, two instantiations)
+   (same findByName<T> — two instantiations)
+> inspect 3
+  Iron key  (wt 0.1, val 0)
 > inspect 99
-  No such item. (BagException: index 99 out of bounds for size 5)
-  (game keeps running — the catch block handled it)
+No such item. (index 98 out of bounds for size 5)
+   (game keeps running — the catch block handled it)
 > sort inventory by weight
-  (still works — now running on your Bag<Item>)
+   1.  Iron key          (wt 0.1, val 0)
+   2.  Loaf of bread     (wt 0.1, val 1)
+   3.  Healing potion    (wt 0.5, val 12)
+   4.  Cloak of shadows  (wt 1.5, val 80)
+   5.  Rusty sword       (wt 4.0, val 5)
 ```
+
+The indented parenthetical lines above are notes to you, not program output. Note
+that `inspect 99` reports index **98** — `inspect` is 1-based for the player, so
+`n - 1` is what reaches `Bag::at`.
 
 ### Lab 3 — *One Mold, Many Shapes* (folded into the project)
 
 There is no separate lab handout. The work you do this week *is* the lab.
 
-Commit `floor-03/lab-notes.md` to your project repo with:
+Commit `floor-03/lab-notes.md` to your project repo with the five items below.
+Two of them ask you to break something on purpose and watch what happens —
+restore your code afterward. Two ask you to reason on paper, with no build at
+all; those are graded on the precision of the reasoning, not its length.
 
-1. A transcript of the demo above. Paste it from your terminal.
-2. **Instantiate `Bag<int>` in a throwaway test and call `findByName` on it.** Paste the full compiler error. Circle (or describe) the one line that actually tells you what's wrong. Why is this harder to read than a normal type error, and what does that tell you about templates?
-3. **Swap `at()` for `operator[]`** in the `inspect` command. Pass a bad index. Describe what the program does now — does it crash? Print garbage? Silently return? Restore `at()` when done. One-sentence answer: when would you ever want `operator[]` over `at()` in production?
-4. **Remove the `try`/`catch` around the main loop.** Trigger a bad `inspect`. Describe exactly what you see on stderr (the unhandled-exception message the runtime prints before `std::terminate`). Put the catch back. Then try the anti-pattern `catch(...) { }` — empty body — and describe what is now *worse* than having no catch at all.
-5. **Change `BagException` so it does NOT inherit from `std::exception`.** What still compiles? What behavior (if any) do you lose? One sentence on why inheriting from `std::exception` is the right default.
+1. **The transcript.** A transcript of the demo above, pasted from your terminal.
+
+2. **Break it — the template error.** Inside `main()` in `main.cpp`, directly above the `printHelp();` call, add exactly these two lines and change nothing else:
+
+   ```cpp
+   Bag<int> numbers;
+   findByName(numbers, "seven");
+   ```
+
+   It will not compile — that is the point. **Copy the error from the Output window, not the Error List pane:** the Error List shows only the one-line summary, and the part this question is about (the indented `template instantiation context` block naming your own line in `main.cpp`) appears only in Output. Paste all of it. Then answer: which **file and line** does the compiler blame, which line did *you* actually get wrong, and why are those two different? Note that `numbers` is empty — the loop inside `findByName` could never run even once. Why does that not save you? Delete the two lines when you are done.
+
+3. **Break it — the Swallowed Scream.** `main.cpp` has more than one `catch`. You want the **outer** one — the handler wrapping the whole command dispatch, the one whose body prints `No such item.` (*not* either of the small inner `catch (...)` blocks that handle a bad number in `inspect` or `benchmark`). Replace that entire handler, declaration and body together, so that
+
+   ```cpp
+   catch (const std::exception& e) {
+       std::cout << "No such item. (" << e.what() << ")\n";
+   }
+   ```
+
+   becomes
+
+   ```cpp
+   catch (...) { }
+   ```
+
+   The old body has to go: `catch (...)` names no exception object, so a body still calling `e.what()` will not compile. Rebuild, then run `inspect 99` followed by `inspect 3`. Describe *exactly* what appears on screen, including what does **not** appear. Then: deleting the handler altogether would make the program die outright. Explain why the empty handler is **worse** than dying. Restore your real handler.
+
+4. **On paper — checked vs. unchecked.** No code for this one. A teammate opens a pull request changing `inspect`'s `hero.inventory.at(n - 1)` to `hero.inventory[n - 1]`, with the note *"at() is slower and we already validate the input upstream."* Write the review comment you would leave. It has to name (a) a specific command a player could type that breaks it, (b) what the program is now permitted to do instead of throwing, and (c) why *"I tested it and it worked"* is not evidence that the change is safe. Finish with one sentence naming the single situation where their change would be the right call.
+
+5. **On paper — why `std::exception`.** No code for this one either. Suppose `BagException` did **not** inherit from `std::exception`. It would still compile: `throw` accepts any type at all, and `what()` would still be there. Explain which line in `main.cpp` silently stops doing its job, what the player sees instead when they type `inspect 99`, and why the compiler cannot warn you about it. Then: what is the smallest change to `main.cpp` that makes it work again, and what does that change cost you every time the game grows a new kind of failure?
 
 Your commit history this week should show at least three commits — Mon (function template), Wed (class template), Fri (exceptions + lab notes).
 
