@@ -38,9 +38,30 @@ You will learn three things this week, and they sit on top of each other:
 </figure>
 
 <figure class="diagram">
-  <img src="{{ '/assets/diagrams/iterator-categories.svg' | relative_url }}" alt="A five-rung ladder. From bottom to top: Input (read once, advance); Output (write once, advance); Forward (multi-pass, advance only); Bidirectional (advance and retreat); Random-access (jump by integer in O(1)). Beside the ladder, a column lists which standard algorithms unlock at each rung: std::find at Input/Forward; std::reverse at Bidirectional; std::sort at Random-access."/>
+  <img src="{{ '/assets/diagrams/iterator-categories.svg' | relative_url }}" alt="A four-rung ladder. From bottom to top: Input (single-pass, read-only); Forward (multi-pass, advance only); Bidirectional (advance and retreat); Random-access (jump by integer in O(1)). Beside the ladder, a column lists which standard algorithms unlock at each rung: std::find at Input/Forward; std::reverse at Bidirectional; std::sort at Random-access."/>
   <figcaption>Iterator categories — each rung adds an operation. <code>Chain&lt;T&gt;::iterator</code> reaches the Forward rung (or Bidirectional, with <code>prev</code>). <code>Bag&lt;T&gt;::iterator</code> reaches Random-access. <code>std::find</code> needs almost nothing; <code>std::sort</code> needs the top rung.</figcaption>
 </figure>
+
+<div class="callout lore" markdown="1">
+<p class="callout-title">The fifth category — the lens that writes</p>
+
+The ladder above is about *reading*: each rung up adds a way to **move**. The fifth category, the **output iterator**, stands beside the ladder rather than on it, because it adds a way to **write**. It promises two things only: `*out = value` stores a value, and `++out` moves to the next slot. You may not read through it, and you may not go back.
+
+The standard library hands you two ready-made ones in `<iterator>`:
+
+```cpp
+// a lens that writes to the screen
+std::copy(hero.eventLog.begin(), hero.eventLog.end(),
+          std::ostream_iterator<std::string>(std::cout, "\n"));
+
+// a lens that appends to a vector — and the honest way to sort a chain
+std::vector<std::string> sorted;
+std::copy(hero.eventLog.begin(), hero.eventLog.end(), std::back_inserter(sorted));
+std::sort(sorted.begin(), sorted.end());   // fine: a vector's iterator is random-access
+```
+
+`std::copy` takes two lenses to read with and one to write with, and knows nothing about what is behind any of them. Your own `Chain<T>::iterator` can stand on the writing side too: `*it` returns `T&`, so `*it = value` works. `const_iterator` cannot, because `*it` returns `const T&` — and that refusal is the reason it exists.
+</div>
 
 `Chain<T>` already has `begin()`-shaped behavior under another name — `head()` is an iterator-like handle. This week you wrap it in a real iterator type and finally retire the hand-walking.
 
@@ -54,7 +75,7 @@ By the end of Floor 5 you will be able to:
 - Read the *single* templated `printLog(first, last, ...)` the starter ships — it replaced Floor 4½'s `printLog`/`printLogOldest` pair — and explain how one function walks a chain forward (`begin`/`end`) and backward (`rbegin`/`rend`) without knowing the container.
 - Use `std::find` and `std::find_if` against `Chain<std::string>`, `Bag<Item>`, and `Bag<Monster>` from one source line each.
 - Read a `std::sort` template error against a forward iterator and name the missing operation it asked for.
-- State the five iterator categories in order and identify which one your container's iterator belongs to.
+- Name the five iterator categories — the four rungs of the ladder in order, plus the output iterator beside it — and identify which ones your container's iterator belongs to.
 
 ## Pre-class
 
@@ -134,14 +155,33 @@ Demo target (Friday):
 
 There is no separate lab handout. The work you do this week *is* the lab.
 
-Commit `floor-05/lab-notes.md` to your project repo with:
+Commit `floor-05/lab-notes.md` to your project repo with the six items below.
+Three of them ask you to break something on purpose and watch what happens —
+restore your code after each one.
 
-1. A transcript of the demo above.
-2. **Plant the bug.** In `operator++`, advance `p_ = p_->prev` instead of `p_ = p_->next`. Build, run `log`, paste what happens. Restore.
-3. **Skip `end()`.** Change `end()` to return an iterator wrapping `head_` instead of `nullptr`. Run a range-based `for` over a non-empty chain. Paste what happens. Restore. In one sentence — what invariant of the iterator contract did the broken `end()` violate?
-4. **The `std::sort` error.** Paste the full compiler error from `std::sort(chain.begin(), chain.end())`. Find and quote the line that names an iterator category requirement. In one sentence: which operation is the standard library asking for that your iterator doesn't provide?
-5. **`auto` vs spelled-out types.** Rewrite one of your range-based loops using the spelled-out iterator type — `Chain<std::string>::const_iterator` — instead of `const auto&`. Both compile. In two sentences: which version is easier to maintain when you later change the container type, and why?
-6. **One-paragraph reflection.** You wrote two versions of `printLog` on Floor 4½ — one walking forward, one walking backward — and they were structurally identical except for three substitutions. This week they collapsed into one function. State, in your own words, what abstraction the iterator type provides that lets that collapse happen.
+1. **The transcript.** A transcript of the demo above, pasted from your terminal.
+
+2. **Plant the bug.** `hero/Chain.h` has two pre-increment `operator++`s. You want the one in `class iterator`, *not* the one in `const_iterator` — `log` walks a non-const chain, so it never calls the const one. Change its `p_ = p_->next` to `p_ = p_->prev`. Build, run two or three `search` commands so the chain holds several events, then run `log` and paste what happens. Run only `log`: once Friday's `operator--` is written, `selftest iterator` crashes while this bug is in. Restore.
+
+3. **Skip `end()`.** Change the non-const `end()` — the one that returns `iterator` — to return an iterator wrapping `head_` instead of `nullptr`. Build, run a couple of `search` commands, then walk the non-empty chain two ways: `log` walks it from `begin()` to `end()`, and phase 1 of `selftest iterator` is a range-based `for` over a 100-element chain. Paste what both print. (The selftest's FAIL messages were written for Monday's stubs, so they will blame operators you did not touch. The cause is your `end()`.) Restore. In one sentence — what invariant of the iterator contract did the broken `end()` violate?
+
+4. **The `std::sort` error.** In `main.cpp`, find the line near the top of `main()` that pushes `"began session as …"` onto `hero.eventLog`. Directly below it, add this line:
+
+   ```cpp
+   std::sort(hero.eventLog.begin(), hero.eventLog.end());
+   ```
+
+   Build — it fails. Paste the full compiler error. Find and quote the line that names an iterator category requirement. Visual Studio never writes "random access" in words: the category shows up only as the name of `std::sort`'s template parameter, `_RanIt`, in the *see reference to function template instantiation* notes (g++ spells it `_RandomAccessIterator`). Then, in one sentence: which operation is the standard library asking for that your iterator doesn't provide? Delete the line.
+
+5. **`auto` vs spelled-out types.** The starter has no range-based loop over the event log, so write one first. The same spot in `main.cpp` you used for item 4 is a fine temporary home:
+
+   ```cpp
+   for (const auto& s : hero.eventLog) std::cout << s << "\n";
+   ```
+
+   Then write the same walk a second time as an explicit loop whose iterator type is spelled out — `Chain<std::string>::const_iterator` — starting at `cbegin()` and stopping at `cend()`. Both compile and print the same thing. Paste both loops into your notes; they don't need to stay in `main.cpp`. In two sentences: which version is easier to maintain when you later change the container type, and why?
+
+6. **One-paragraph reflection.** You wrote two versions of `printLog` on Floor 4½ — one walking forward, one walking backward — and they were structurally identical except for three substitutions. (Look back at `printLog` and `printLogOldest` in your Floor 4½ `hero/Hero.cpp` and find the three before you write.) This week they collapsed into one function. State, in your own words, what abstraction the iterator type provides that lets that collapse happen.
 
 Your commit history this week should show at least three commits — Mon (iterator + begin/end), Wed (const_iterator + std::find_if), Fri (categories + operator-- + lab notes).
 
