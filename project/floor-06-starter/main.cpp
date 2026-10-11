@@ -267,19 +267,19 @@ int main() {
                 // Reference body (do NOT paste — type it from memory in
                 // class once your Stack is working):
                 //
-                //     if (hero.undoStack.empty()) {
-                //         std::cout << "Nothing to undo.\n";
-                //     } else {
-                //         const UndoAction& a = hero.undoStack.top();
-                //         hero.inventory = a.inventorySnapshot;
-                //         std::cout << "Undid: " << a.description << "\n";
-                //         hero.eventLog.push_front("undo (" + a.description + ")");
-                //         hero.undoStack.pop();
-                //     }
-                //
+                     if (hero.undoStack.empty()) {
+                         std::cout << "Nothing to undo.\n";
+                     } else {
+                         const UndoAction& a = hero.undoStack.top();
+                         hero.inventory = a.inventorySnapshot;
+                         std::cout << "Undid: " << a.description << "\n";
+                         hero.eventLog.push_front("undo (" + a.description + ")");
+                         hero.undoStack.pop();
+                     }
+                
                 // The order matters: bind the reference BEFORE pop().
                 // Once you pop, the Action you were looking at is gone.
-                std::cout << "(undo not yet implemented — TODO Friday in main.cpp)\n";
+                
             }
             else if (cmd == "lint") {
                 if (rest.empty()) {
