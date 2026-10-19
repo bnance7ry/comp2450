@@ -52,4 +52,4 @@ Commit at least three times — Mon, Wed, Fri.
 
 ## Lab notes
 
-`floor-07/lab-notes.md` (in your project repo, not in this starter) — items 1–6 are spelled out on [the Floor 7 page](https://hogred.github.io/comp2450/floors/floor-07/).
+`floor-07/lab-notes.md` (in your project repo, not in this starter) — items 1–5 are spelled out on [the Floor 7 page](https://hogred.github.io/comp2450/floors/floor-07/).

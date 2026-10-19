@@ -137,11 +137,32 @@ There is no separate lab handout. The work you do this week *is* the lab.
 Commit `floor-07/lab-notes.md` to your project repo with:
 
 1. A transcript of the demo above (with your own hero name and your own choice of provoked enemies).
-2. **The contrast one-pager.** Place your Floor 6 `Stack.h` and your Floor 7 `Queue.h` side by side and write *in two short paragraphs* what changed. Mention the specific `Chain<T>` methods each adapter calls. End with one sentence: *"A stack and a queue are different because…"* — fill it in.
-3. **The cheap swap, redux.** In your `Queue<T>` definition, change the underlying container from `Chain<T>` to `Bag<T>`. You will need to change `push_back` accordingly (Bag has `push_back`) and find Bag's pop-front equivalent — or notice it does not have a fast one. Build, run `selftest queue`, paste the output. If `selftest queue` still passes, run it with N = 100,000 names in a small main and time it. What did you pay for using `Bag<T>` instead of `Chain<T>`? *Why?* Restore.
-4. **An empty queue call.** Without checking `empty()` first, call `q.front()` on an empty `Queue<int>` from a small main. Build, run, paste what you see — a crash, garbage, or silent UB. Then add the guard. In one sentence: why does the queue ADT *deliberately not* throw on this — and what does that tell you about ADT design philosophy?
-5. **Queue from two stacks.** In a scratch file, build a class `StackQueue<T>` that has the same five-method surface as `Queue<T>` but uses *two `Stack<T>` objects* internally (one for ins, one for outs; transfer when outs is empty). Run the same `selftest queue` (literally — instantiate it as a `StackQueue<int>` instead). Paste the output. In two sentences: which is amortized O(1), which has occasional O(n) transfer bursts, and why does the *ADT* not care which is which?
-6. **One-paragraph reflection.** You wrote the same kind of thing twice in two weeks: a five-method adapter that gives a contract on top of a `Chain<T>`. What feels different the second time? What would you build *next* with this pattern if we kept going? (Heads up: a deque is one more end-pairing decision away.)
+
+2. **Same chain, different ends.** Open your Floor 6 `hero/Stack.h` and your Floor 7 `hero/Queue.h` side by side and fill in this table with the `Chain<T>` method each one calls:
+
+   | Job | `Stack<T>` calls… | `Queue<T>` calls… |
+   |---|---|---|
+   | add an item (`push` / `enqueue`) | | |
+   | remove an item (`pop` / `dequeue`) | | |
+   | read the next item out (`top` / `front`) | | |
+
+   Then finish two sentences: *"A stack and a queue are different because…"* and *"Queue uses a `Chain<T>` instead of a `Bag<T>` because…"* (the comment at the top of `Queue.h` answers the second one).
+
+3. **Grix's shortcut.** Grix says to skip the line and `enqueue` at the front. Try it: in `hero/Queue.h`, change the one word in `enqueue` from `chain_.push_back(value);` to `chain_.push_front(value);`. Build, then run `selftest queue` and `potato A B C D E 3`. Paste both outputs. In one sentence: what did you actually build? Change the word back, rebuild, and run `selftest queue` once more to confirm all phases are OK again.
+
+   *Optional bonus:* Phase 4 still says OK even with Grix's version. Why did it pass by luck?
+
+4. **Pass the potato by hand.** Before you run it, predict the survivor of `potato A B C D 2` on paper. Write the queue after each step (front on the left). The first two rows are done for you:
+
+   ```
+   start:               A B C D
+   rotate (A to back):  B C D A
+   eliminate B:         ...
+   ```
+
+   Keep going until one name is left. Then run `potato A B C D 2` and paste the output. Did your trace match?
+
+5. **Short reflection (two or three sentences).** You wrote the same kind of thing two weeks in a row: a small adapter that puts a contract on top of a `Chain<T>`. What felt easier the second time?
 
 Your commit history this week should show at least three commits — Mon (`Queue<T>` + `selftest queue` passes), Wed (`hotPotato` + `potato` returns real survivors), Fri (`simulate` dispatcher + lab notes).
 

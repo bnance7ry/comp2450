@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-labelledby="ta-title ta-desc">
   <title id="ta-title">Anatomy of a tree — root, parent, child, leaf, edge, depth, level, height</title>
-  <desc id="ta-desc">A tree of seven nodes labelled A through G. Node A is the root at the top with no parent. A has three children B, C, and D on the next row. B has two children E and F; D has one child G; the bottom row E, F, G plus the childless C are the leaves. Lines between nodes are edges. A right-hand axis marks level 0 at the root, level 1 for B C D, and level 2 for the leaves; depth is the number of edges from the root. A bracket on the right marks the tree's height as 2 — the largest depth of any node. Callouts point to the root (no parent), an edge (the link parent to child), and a leaf (no children).</desc>
+  <desc id="ta-desc">A tree of seven nodes labelled A through G. Node A is the root at the top with no parent. A has three children B, C, and D on the next row. B has two children E and F; D has one child G; the bottom row E, F, G plus the childless C are the leaves. Lines between nodes are edges. A right-hand axis marks level 0 at the root, level 1 for B C D, and level 2 for the leaves; depth is the number of edges from the root. A bracket on the left marks the tree's height as 2 — the largest depth of any node. Callouts point to the root (no parent), an edge (the link parent to child), and the leaves F and G (no children).</desc>
   <style>
     .panel       { fill: #f6efd5; stroke: #8b5a00; stroke-width: 0.8; opacity: 0.4; }
     .node        { fill: #f2e4bc; stroke: #8b5a00; stroke-width: 1.6; }
@@ -15,7 +15,13 @@
     .axis-line   { stroke: #8b5a00; stroke-width: 0.8; stroke-dasharray: 3 3; opacity: 0.5; }
     .callout     { font-family: Georgia, serif; font-size: 11.5px; fill: #6b0f0f; font-weight: 700; text-anchor: middle; }
     .callout-sub { font-family: Georgia, serif; font-size: 10.5px; fill: #4a3a2a; font-style: italic; text-anchor: middle; }
+    /* halo: a panel-coloured outline painted UNDER the glyphs, so a dashed
+       level line or an edge passing behind a label never cuts through it */
+    .halo        { paint-order: stroke; stroke: #fbf8ee; stroke-width: 4px; stroke-linejoin: round; }
+    .start       { text-anchor: start; }
+    .end         { text-anchor: end; }
     .leader      { stroke: #6b0f0f; stroke-width: 1.2; fill: none; stroke-dasharray: 2 2; }
+    .leader-dot  { fill: #6b0f0f; }
     .bracket     { stroke: #6b0f0f; stroke-width: 1.6; fill: none; }
     .note-strong { font-family: Georgia, serif; font-size: 12px; fill: #6b0f0f; font-weight: 700; text-anchor: middle; }
   </style>
@@ -24,49 +30,57 @@
   <text class="panel-title" x="380" y="30">one node, a bag of children, exactly one parent</text>
   <text class="subtitle"    x="380" y="48">every node but the root has exactly one parent; a node with no children is a leaf</text>
 
-  <!-- level guide lines -->
-  <line class="axis-line" x1="40" y1="95"  x2="620" y2="95"/>
-  <line class="axis-line" x1="40" y1="195" x2="620" y2="195"/>
-  <line class="axis-line" x1="40" y1="295" x2="620" y2="295"/>
-  <text class="axis-label" x="628" y="99">level 0 · depth 0</text>
-  <text class="axis-label" x="628" y="199">level 1 · depth 1</text>
-  <text class="axis-label" x="628" y="299">level 2 · depth 2</text>
+  <!-- level guide lines (tree sits 25px lower than the header block so
+       the root callout has its own row) -->
+  <line class="axis-line" x1="40" y1="120" x2="620" y2="120"/>
+  <line class="axis-line" x1="40" y1="215" x2="620" y2="215"/>
+  <line class="axis-line" x1="40" y1="310" x2="620" y2="310"/>
+  <text class="axis-label" x="628" y="124">level 0 · depth 0</text>
+  <text class="axis-label" x="628" y="219">level 1 · depth 1</text>
+  <text class="axis-label" x="628" y="314">level 2 · depth 2</text>
 
   <!-- edges (drawn before nodes so nodes sit on top) -->
-  <line class="edge" x1="300" y1="95"  x2="190" y2="195"/>
-  <line class="edge" x1="300" y1="95"  x2="300" y2="195"/>
-  <line class="edge" x1="300" y1="95"  x2="410" y2="195"/>
-  <line class="edge" x1="190" y1="195" x2="130" y2="295"/>
-  <line class="edge" x1="190" y1="195" x2="250" y2="295"/>
-  <line class="edge" x1="410" y1="195" x2="470" y2="295"/>
+  <line class="edge" x1="300" y1="120" x2="190" y2="215"/>
+  <line class="edge" x1="300" y1="120" x2="300" y2="215"/>
+  <line class="edge" x1="300" y1="120" x2="410" y2="215"/>
+  <line class="edge" x1="190" y1="215" x2="130" y2="310"/>
+  <line class="edge" x1="190" y1="215" x2="250" y2="310"/>
+  <line class="edge" x1="410" y1="215" x2="470" y2="310"/>
 
   <!-- nodes -->
-  <circle class="node-root" cx="300" cy="95"  r="22"/><text class="node-label" x="300" y="100">A</text>
-  <circle class="node"      cx="190" cy="195" r="22"/><text class="node-label" x="190" y="200">B</text>
-  <circle class="node-leaf" cx="300" cy="195" r="22"/><text class="node-label" x="300" y="200">C</text>
-  <circle class="node"      cx="410" cy="195" r="22"/><text class="node-label" x="410" y="200">D</text>
-  <circle class="node-leaf" cx="130" cy="295" r="22"/><text class="node-label" x="130" y="300">E</text>
-  <circle class="node-leaf" cx="250" cy="295" r="22"/><text class="node-label" x="250" y="300">F</text>
-  <circle class="node-leaf" cx="470" cy="295" r="22"/><text class="node-label" x="470" y="300">G</text>
+  <circle class="node-root" cx="300" cy="120" r="22"/><text class="node-label" x="300" y="125">A</text>
+  <circle class="node"      cx="190" cy="215" r="22"/><text class="node-label" x="190" y="220">B</text>
+  <circle class="node-leaf" cx="300" cy="215" r="22"/><text class="node-label" x="300" y="220">C</text>
+  <circle class="node"      cx="410" cy="215" r="22"/><text class="node-label" x="410" y="220">D</text>
+  <circle class="node-leaf" cx="130" cy="310" r="22"/><text class="node-label" x="130" y="315">E</text>
+  <circle class="node-leaf" cx="250" cy="310" r="22"/><text class="node-label" x="250" y="315">F</text>
+  <circle class="node-leaf" cx="470" cy="310" r="22"/><text class="node-label" x="470" y="315">G</text>
 
-  <!-- callout: root -->
-  <path class="leader" d="M 300 73 Q 300 58 250 56"/>
-  <text class="callout"     x="170" y="54">root</text>
-  <text class="callout-sub" x="170" y="68">no parent · the one way in</text>
+  <!-- callout: root — upper-left of A, right-aligned so the text ends
+       before the circle; leader lands on A's rim -->
+  <text class="callout end halo"     x="262" y="94">root</text>
+  <text class="callout-sub end halo" x="262" y="108">no parent · the one way in</text>
+  <path class="leader" d="M 266 100 Q 276 100 283 104"/>
+  <circle class="leader-dot" cx="284" cy="105" r="2.5"/>
 
-  <!-- callout: edge -->
-  <path class="leader" d="M 355 145 Q 380 140 395 132"/>
-  <text class="callout"     x="440" y="128">edge</text>
-  <text class="callout-sub" x="440" y="142">the link parent → child</text>
+  <!-- callout: edge — dot sits on the midpoint of edge A→D, label in the
+       open space to its right -->
+  <circle class="leader-dot" cx="355" cy="167" r="2.5"/>
+  <path class="leader" d="M 359 165 Q 372 159 386 158"/>
+  <text class="callout start halo"     x="392" y="161">edge</text>
+  <text class="callout-sub start halo" x="392" y="175">the link parent → child</text>
 
-  <!-- callout: leaf -->
-  <path class="leader" d="M 250 317 Q 250 340 300 344"/>
-  <text class="callout"     x="360" y="348">leaf</text>
-  <text class="callout-sub" x="360" y="362">no children (C, E, F, G)</text>
+  <!-- callout: leaf — label centred between F and G, one leader to each -->
+  <text class="callout halo"     x="360" y="362">leaf</text>
+  <text class="callout-sub halo" x="360" y="376">no children (C, E, F, G)</text>
+  <path class="leader" d="M 340 358 Q 285 354 267 328"/>
+  <circle class="leader-dot" cx="266" cy="326" r="2.5"/>
+  <path class="leader" d="M 380 358 Q 435 354 453 328"/>
+  <circle class="leader-dot" cx="454" cy="326" r="2.5"/>
 
   <!-- height bracket on the far left -->
-  <path class="bracket" d="M 40 95 L 28 95 L 28 295 L 40 295"/>
-  <text class="callout" x="20" y="200" transform="rotate(-90 20 200)">height = 2</text>
+  <path class="bracket" d="M 40 120 L 28 120 L 28 310 L 40 310"/>
+  <text class="callout" x="20" y="215" transform="rotate(-90 20 215)">height = 2</text>
 
   <text class="note-strong" x="380" y="404">height = the largest depth in the tree (here 2 edges, A → B → E)</text>
 </svg>
