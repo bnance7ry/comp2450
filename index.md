@@ -33,19 +33,19 @@ Welcome, adventurer, to **COMP 2450 — Data Structures & Algorithms**. This sem
 | 2  | 1  | [The Scrying Well]({{ site.baseurl }}/floors/floor-01/)         | Searching & Big-O intuition |
 | 3  | 2  | [The Sorting Crucible]({{ site.baseurl }}/floors/floor-02/)     | Merge sort, quicksort, divide-and-conquer |
 | 4  | 3  | [The Forgemaster's Vault]({{ site.baseurl }}/floors/floor-03/) | Templates & exceptions |
-| 4 end | Warden I | [Warden of the Foundations]({{ site.baseurl }}/floors/warden-01/) | Midterm 1 — Floors 0–3 take-home + Friday quiz |
+| 4 end | Warden I | [Warden of the Foundations]({{ site.baseurl }}/floors/warden-01/) | Midterm 1 — Floors 0–3 code-along with the Warden videos |
 | 5  | 4  | [The Chain Vault]({{ site.baseurl }}/floors/floor-04/) | Singly-linked lists |
 | 6  | 4½ | [The Chain Vault, Deeper]({{ site.baseurl }}/floors/floor-04h/) | Doubly-linked lists & the full Rule of Three |
 | 7  | 5  | [The Eye of Scrying]({{ site.baseurl }}/floors/floor-05/) | Iterators — one spell to walk any container |
 | 8  | 6  | [The Hall of Echoes]({{ site.baseurl }}/floors/floor-06/)       | LIFO, undo, call-stack intuition |
 | 9  | 7  | [The Cisterns]({{ site.baseurl }}/floors/floor-07/) | FIFO, queues, AI action scheduling |
-| 9 end | Warden II | [Warden of the Middle Gates]({{ site.baseurl }}/floors/warden-02/) | Midterm 2 — Floors 4–7 take-home + Friday quiz |
+| 9 end | Warden II | [Warden of the Middle Gates]({{ site.baseurl }}/floors/warden-02/) | Midterm 2 — Floors 4–7 code-along with the Warden videos |
 | 10 | 8  | [The Hall of Lineages]({{ site.baseurl }}/floors/floor-08/)     | General (n-ary) trees — recursion, DFS/BFS, lineage |
 | 11 | 9  | [The Halving Hall]({{ site.baseurl }}/floors/floor-09/)         | Binary search trees — fast lookup, the free sort |
 | 12 | 9½ | [The Balanced Hall]({{ site.baseurl }}/floors/floor-09h/)     | Self-balancing trees — diagnose the lean, rotate, then reach for std::set |
 | 13 | 10 | [The Hall of Names]({{ site.baseurl }}/floors/floor-10/)         | Sets & maps |
 | 14 | 11 | [The Hall of Whispers]({{ site.baseurl }}/floors/floor-11/)     | Hash tables — O(1) lookup |
-| 14 end | Warden III | [Warden of the Trees]({{ site.baseurl }}/floors/warden-03/) | Midterm 3 — Floors 8–11 take-home + Friday quiz |
+| 14 end | Warden III | [Warden of the Trees]({{ site.baseurl }}/floors/warden-03/) | Midterm 3 — Floors 8–11 code-along with the Warden videos |
 | 15 | 12 | [The Labyrinth]({{ site.baseurl }}/floors/floor-12/) / Final Descent | Graphs, project capstone, final prep |
 | 15 | ↓ | [The Archive: The Restoration]({{ site.baseurl }}/archive/) | The end of the story — for those who reach the bottom |
 
@@ -55,7 +55,7 @@ Welcome, adventurer, to **COMP 2450 — Data Structures & Algorithms**. This sem
 - **In class.** MWF 50-minute sessions. We will not re-read the textbook to you. We will wield it.
 - **Lab.** Hands-on exercises. Paired work encouraged.
 - **The Project.** A text-based dungeon crawler you grow every single floor. One unlock per week. By Floor 12 it is a real game.
-- **Exams.** Three warden fights (end of weeks 4, 9, 14) and a cumulative **Final Descent**. Each warden is a take-home portion plus an in-class Friday quiz.
+- **Exams.** Three warden fights (end of weeks 4, 9, 14) and a cumulative **Final Descent**. Each warden is a code-along: build the encounter with the recorded Warden videos and submit your code.
 - **The ZyBook Pact.** Finish every zyLab in the ZyBook on your own, any time before the last day of class, and your Final Descent is recorded as 100% — you never have to sit it. The terms are in [the syllabus]({{ site.baseurl }}/syllabus/).
 
 ## Before Floor 0
