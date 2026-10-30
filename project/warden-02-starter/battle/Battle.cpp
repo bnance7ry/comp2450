@@ -261,65 +261,56 @@ BattleOutcome runWardenBattle(Hero& hero) {
 //      iterator, the undo stack is pushed before mutating, the wave
 //      really is a Queue<Enemy>.
 
-BattleOutcome runWaveSurvival(Hero& hero, int waves) {
-    // TODO — write the wave-survival encounter. Suggested outline:
-    //
-    //   if (waves < 1) waves = 1;
-    //   int playerHP = 40;
-    //
-    //   Bag<...> menu;  // five options (see above)
-    //   Stack<UndoAction> battleUndo;  // local, OR use hero.undoStack
-    //   bool undoUsedThisTurn = false;
-    //
-    //   hero.eventLog.push_front("battle waves N — yard opens");
-    //
-    //   for (int w = 1; w <= waves; ++w) {
-    //       Queue<Enemy> line = buildWave(w);  // your helper
-    //       hero.eventLog.push_front("wave w enters …");
-    //
-    //       while (!line.empty() && playerHP > 0) {
-    //           try {
-    //               print state + menu
-    //               read choice
-    //               switch (choice) {
-    //                   case Attack:     snapshot, undoUsed=false,
-    //                                    damage front, dequeue if dead
-    //                                    else retaliate.
-    //                   case UseItem:    snapshot, undoUsed=false,
-    //                                    useItem(...); retaliate.
-    //                   case InspectLog: printLog(eventLog.begin(),
-    //                                             eventLog.end(), N,
-    //                                             "newest first",
-    //                                             eventLog.size());
-    //                                    FREE — do NOT advance turn.
-    //                   case Undo:       if undoUsed → block.
-    //                                    if battleUndo.empty() → block.
-    //                                    else: pop, restore HP+inv.
-    //                                    undoUsed=true.  FREE.
-    //                   case Flee:       return BattleOutcome::Fled.
-    //               }
-    //           }
-    //           catch (const BagException& e) {
-    //               std::cout << "  " << e.what() << " — try again.\n";
-    //           }
-    //       }
-    //
-    //       if (playerHP <= 0) return BattleOutcome::Defeat;
-    //       wave cleared — announce.
-    //   }
-    //
-    //   return BattleOutcome::Victory;
-    //
-    // Decompose into helpers however you want.  buildWave, printWaveMenu,
-    // readWaveChoice, recordBattleUndo are the four natural extractions.
-    // The contract main.cpp depends on is just runWaveSurvival(Hero&, int).
-    //
-    // Replace the placeholder body below.
+// =====================================================================
+// WARDEN 2 — wave survival (Floors 4–7).
+// =====================================================================
 
-    (void)hero; (void)waves;
-    std::cout << "  (Wave-survival scaffold — runWaveSurvival is not yet written.)\n"
-              << "  (Open battle/Battle.cpp and follow the TODOs.)\n";
-    return BattleOutcome::Fled;
+BattleOutcome runWaveSurvival(Hero& hero, int waves) {
+    if (waves < 1) waves = 1;
+
+	constexpr int maxHP = 40;
+    constexpr int attackDamage = 7;
+    int playerHP = maxHP;
+
+	struct Enemy {
+		std::string name;
+		int hp;
+		int attack;
+	};
+
+	Stack<UndoAction> battleUndo;  // F6: stack, not queue, because we want LIFO undo of the most recent action.  The wave queue is NOT restored by undo.
+	bool undoUsedThisTurn = false;  // F6: track if undo was used this turn to prevent multiple undos.
+
+    auto recordUndo = [&](const std::string& description) {
+        UndoAction a;
+		a.description = description;
+		a.inventorySnapshot = hero.inventory;  // snapshot inventory
+		a.playerHP = playerHP;  // snapshot HP
+        battleUndo.push(a);
+    };
+	hero.eventLog.push_front("battle waves " + std::to_string(waves) + " -- yard opens");
+
+    for (int w = 1; w <= waves; ++w) {
+        Queue<Enemy> line;
+        for (int i = 0; i < w + 1; ++i) {
+            if (i % 3 == 0) {
+                line.enqueue({ "Imp # " + std::to_string(i + 1), 8, 3 });  // Example enemy stats
+            }
+            else if (i % 3 == 1) {
+                line.enqueue({ "Rat # " + std::to_string(i + 1), 5, 2 });
+            }
+            else {
+                line.enqueue({ "Skeleton # " + std::to_string(i + 1), 12, 4 });
+            }
+        }
+
+        hero.eventLog.push_front("wave " + std::to_string(w) + " enters (" + std::to_string(line.size()) + " enemies)");
+
+        while (!line.empty() && playerHP > 0) {
+			const Enemy& frontEnemy = line.front();
+			std::cout << "\n -- Wave" << w << " --  Player HP: " << playerHP << "  Front Enemy: " << frontEnemy.name << " (HP: " << frontEnemy.hp << ")\n";
+        }
+    }
 }
 
 }  // namespace dungeon

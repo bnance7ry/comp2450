@@ -131,8 +131,10 @@ private:
     //     else if (n->data < value) n->right = insertInto(n->right, value);
     //     return n;
     static Node* insertInto(Node* n, const T& value) {
-        (void)value;
-        return n;   // TODO Monday — stub leaves the tree unchanged
+        if (n == nullptr) return new Node(value);
+        if (value < n->data)      n->left  = insertInto(n->left,  value);
+        else if (n->data < value) n->right = insertInto(n->right, value);
+        return n;
     }
 
     // Search for `value`. Unlike Floor 8's findFrom, you do NOT ask every
@@ -145,8 +147,10 @@ private:
     //     if (n->data < value) return findFrom(n->right, value);
     //     return n;   // equal => found
     static const Node* findFrom(const Node* n, const T& value) {
-        (void)n; (void)value;
-        return nullptr;   // TODO Monday
+        if (n == nullptr)    return nullptr;
+        if (value < n->data) return findFrom(n->left,  value);
+        if (n->data < value) return findFrom(n->right, value);
+        return n;   // equal => found
     }
 
     // ----- Wednesday -------------------------------------------------
@@ -162,8 +166,10 @@ private:
     //     out.push_back(n->data);
     //     inOrderInto(n->right, out);
     static void inOrderInto(const Node* n, std::vector<T>& out) {
-        (void)n; (void)out;
-        // TODO Wednesday
+        if (n == nullptr) return;
+        inOrderInto(n->left, out);
+        out.push_back(n->data);
+        inOrderInto(n->right, out);
     }
 
     // Free the whole subtree. This is the Floor 8 Tree destructor with
@@ -176,8 +182,10 @@ private:
     //     destroy(n->right);
     //     delete n;
     static void destroy(Node* n) {
-        (void)n;
-        // TODO Wednesday — until written, the BST leaks its nodes
+        if (n == nullptr) return;
+        destroy(n->left);
+        destroy(n->right);
+        delete n;
     }
 
     // Deep-copy the whole subtree. Mirrors destroy(): make this node, then
@@ -190,8 +198,11 @@ private:
     //     copy->right = clone(n->right);
     //     return copy;
     static Node* clone(const Node* n) {
-        (void)n;
-        return nullptr;   // TODO Wednesday — stub copies to an empty tree
+        if (n == nullptr) return nullptr;
+        Node* copy = new Node(n->data);
+        copy->left  = clone(n->left);
+        copy->right = clone(n->right);
+        return copy;
     }
 
     // ----- Friday ----------------------------------------------------
@@ -220,8 +231,18 @@ private:
     //     n->right = removeFrom(n->right, succ->data, discard);
     //     return n;
     static Node* removeFrom(Node* n, const T& value, bool& removed) {
-        (void)value; (void)removed;
-        return n;   // TODO Friday — stub leaves the tree unchanged
+        if (n == nullptr) return nullptr;
+        if (value < n->data) { n->left  = removeFrom(n->left,  value, removed); return n; }
+        if (n->data < value) { n->right = removeFrom(n->right, value, removed); return n; }
+        removed = true;
+        if (n->left  == nullptr) { Node* r = n->right; delete n; return r; }
+        if (n->right == nullptr) { Node* l = n->left;  delete n; return l; }
+        Node* succ = n->right;
+        while (succ->left != nullptr) succ = succ->left;
+        n->data = succ->data;
+        bool discard = false;
+        n->right = removeFrom(n->right, succ->data, discard);
+        return n;
     }
 };
 
