@@ -50,7 +50,7 @@ class BST {
 public:
     struct Node {
         T     data;
-        Node* left  = nullptr;
+        Node* left = nullptr;
         Node* right = nullptr;
         explicit Node(const T& v) : data(v) {}
     };
@@ -75,8 +75,8 @@ public:
     std::size_t height() const { return heightFrom(root_); }   // EDGES
 
     // ----- Floor 9 operations (PROVIDED delegators, complete) --------
-    void insert(const T& value)            { root_ = insertInto(root_, value); }
-    bool contains(const T& value) const    { return findFrom(root_, value) != nullptr; }
+    void insert(const T& value) { root_ = insertInto(root_, value); }
+    bool contains(const T& value) const { return findFrom(root_, value) != nullptr; }
     const Node* find(const T& value) const { return findFrom(root_, value); }
     std::vector<T> inOrder() const {
         std::vector<T> out;
@@ -152,13 +152,13 @@ private:
 
     static Node* insertInto(Node* n, const T& value) {
         if (n == nullptr) return new Node(value);
-        if (value < n->data)      n->left  = insertInto(n->left,  value);
+        if (value < n->data)      n->left = insertInto(n->left, value);
         else if (n->data < value) n->right = insertInto(n->right, value);
         return n;
     }
     static const Node* findFrom(const Node* n, const T& value) {
         if (n == nullptr)    return nullptr;
-        if (value < n->data) return findFrom(n->left,  value);
+        if (value < n->data) return findFrom(n->left, value);
         if (n->data < value) return findFrom(n->right, value);
         return n;
     }
@@ -177,16 +177,16 @@ private:
     static Node* clone(const Node* n) {
         if (n == nullptr) return nullptr;
         Node* copy = new Node(n->data);
-        copy->left  = clone(n->left);
+        copy->left = clone(n->left);
         copy->right = clone(n->right);
         return copy;
     }
     static Node* removeFrom(Node* n, const T& value, bool& removed) {
         if (n == nullptr) return nullptr;
-        if (value < n->data) { n->left  = removeFrom(n->left,  value, removed); return n; }
+        if (value < n->data) { n->left = removeFrom(n->left, value, removed); return n; }
         if (n->data < value) { n->right = removeFrom(n->right, value, removed); return n; }
         removed = true;
-        if (n->left == nullptr)  { Node* r = n->right; delete n; return r; }
+        if (n->left == nullptr) { Node* r = n->right; delete n; return r; }
         if (n->right == nullptr) { Node* l = n->left;  delete n; return l; }
         Node* succ = n->right;
         while (succ->left != nullptr) succ = succ->left;
@@ -207,8 +207,8 @@ private:
     //     if (n == nullptr) return 0;
     //     return signedHeight(n->left) - signedHeight(n->right);
     static int balanceFactorOf(const Node* n) {
-        (void)n;
-        return 0;   // TODO Monday — stub reports every tree as perfectly level
+        if (n == nullptr) return 0;
+        return signedHeight(n->left) - signedHeight(n->right);
     }
 
     // True iff the subtree at n is height-balanced at EVERY node. Check THIS
@@ -221,8 +221,10 @@ private:
     //     if (bf < -1 || bf > 1) return false;
     //     return isBalancedFrom(n->left) && isBalancedFrom(n->right);
     static bool isBalancedFrom(const Node* n) {
-        (void)n;
-        return true;   // TODO Monday — stub claims every tree is balanced
+        if (n == nullptr) return true;
+        const int bf = balanceFactorOf(n);
+        if (bf < -1 || bf > 1) return false;
+        return isBalancedFrom(n->left) && isBalancedFrom(n->right);
     }
 
     // ----- Wednesday: the rotation primitive -------------------------
@@ -246,7 +248,10 @@ private:
     //     pivot->right = n;
     //     return pivot;
     static Node* rotateRight(Node* n) {
-        return n;   // TODO Wednesday — stub returns the tree unrotated
+        Node* pivot = n->left;
+        n->left = pivot->right;
+        pivot->right = n;
+        return pivot;
     }
 
     // Left rotation around n — the mirror of rotateRight. n's RIGHT child
@@ -259,8 +264,13 @@ private:
     //     pivot->left = n;
     //     return pivot;
     static Node* rotateLeft(Node* n) {
-        return n;   // TODO Wednesday — stub returns the tree unrotated
+        Node* pivot = n->right;
+        n->right = pivot->left;
+        pivot->left = n;
+        return pivot;
     }
+
+        
 
     // ----- Friday: pick the rotation ---------------------------------
 
@@ -277,7 +287,11 @@ private:
     //     if (bf < -1) return rotateLeft(n);    // right-heavy
     //     return n;
     static Node* rebalanceAt(Node* n) {
-        return n;   // TODO Friday — stub never rebalances
+        if (n == nullptr) return n;
+        const int bf = balanceFactorOf(n);
+        if (bf > 1)  return rotateRight(n);   // left-heavy
+        if (bf < -1) return rotateLeft(n);    // right-heavy
+        return n;
     }
 };
 
