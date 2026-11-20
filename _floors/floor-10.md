@@ -179,20 +179,21 @@ Floor 9½ and a key->value index on top of it, for free.
 McCown notes your departure. "You leave in order."
 ```
 
-*(The `benchmark names` microsecond numbers above are wall-clock — they vary run to run and machine to machine. What is reproducible and quotable: linear grows with N while BST and `std::map` stay flat, `std::map` tracks the BST, and the tree-height column climbs 13 → 21 → 30 → 40 as N grows. The closing argument the command prints — that `std::map` is the balanced red-black tree of Floor 9½ with a key→value index on top, for free — is fixed text.)*
+*(The `benchmark names` microsecond numbers above are wall-clock — they vary run to run and machine to machine. What is reproducible and quotable: linear grows with N while BST and `std::map` stay flat, `std::map` tracks the BST, and the tree-height column climbs by about 10 each row as N grows. In Visual Studio the N=1000 row says height 22 instead of 21: the benchmark shuffles the names before building the tree, and Visual Studio's `std::shuffle` mixes them a little differently. The closing argument the command prints — that `std::map` is the balanced red-black tree of Floor 9½ with a key→value index on top, for free — is fixed text.)*
 
 ### Lab 10 — *The Word and the Meaning* (folded into the project)
 
 There is no separate lab handout. The work you do this week *is* the lab. Commit `floor-10/lab-notes.md` with:
 
-1. A transcript of the demo above (your own hero name); include at least `lookup` of three creatures, one of them absent, and one `strike`.
-2. **Set vs. map, by hand.** In two sentences each, give one bestiary task that wants a `std::set` (you only need to *know* something is present) and one that wants a `std::map` (you need a value *back*). Name the single member call each task turns into.
-3. **Why is it sorted?** Run `weaknesses` and `names`. You inserted the monsters in *file* order (not alphabetical) — so why do both come out sorted, with no sort step in your code? In two sentences: what *are* `std::set`/`std::map` under the hood, and which floor did you build that thing by hand?
-4. **`recall`, then and now.** On Floor 9, `recall` was a recursive tree descent you wrote; on Floor 10 it is one `map::find`. In two sentences: what did you give up by switching, and what did you gain? (Be honest about both.)
-5. **The Phantom Key.** Explain, in your own words, why `weaknessCounts["thunder"]` used to *read* a count corrupts the map. What does `operator[]` do on a missing key, what should you have called instead, and how does making `countWeakness` `const` turn the bug into a compile error?
-6. **The pair and the `const` key.** Iterating a `std::map` hands you a `std::pair<const Key, Value>`. Why is the key half `const` — what would break if you could mutate a key in place while it sat in the tree?
-7. **Three views, one source.** After `strike Goblin`, `names` no longer lists Goblin but `recall Goblin` (the Floor 9 tree command) still finds it. In two sentences: why is that *correct*, not a bug — why can the Bag, the BST, and the Registry legitimately disagree about whether "Goblin" exists?
-8. **One-paragraph reflection.** You have now built five pointer structures and, this week, used a sixth you did *not* build. What changed in how you work when the data structure is a black box you trust instead of code you maintain? And: the map answers in O(log n) by keeping everything in order — what would you trade away to answer in O(1)?
+1. A transcript of the demo above (your own hero name). Include `lookup` of three creatures, one of them not in the bestiary (`lookup Drake` works), and at least one `strike`. (Your `benchmark names` microseconds will not match the page; that's fine.)
+2. **Set or map?** Each question below is one line of code against one of the Registry's three containers (`byName_`, `weaknesses_`, `weaknessCounts_`). For each, write that line — the way it would appear inside a `Registry` method — for example `weaknesses_.count("fire") > 0`.
+   (a) Does McCown know a monster named Wisp? (b) What is Wisp's attack? (c) Does anything fear light? (d) How many monsters fear holy?
+   Then one sentence: when do you want a `std::set` instead of a `std::map`?
+3. **Sorted for free, and the `const` key.** Run `names`. The monsters went in in *file* order (Goblin, Wraith, Skeleton, …). In one or two sentences: why do they come out alphabetical with no sort in your code, and which earlier floor had you build that same kind of structure by hand? Then: each element of the map is a `std::pair<const std::string, Monster>`, and the name is `const`. Suppose you could rename the `"Bone Spider"` key to `"Zombie"` without moving it. Where in the map would `"Zombie"` be sitting, and why would `find("Zombie")` then miss it?
+4. **`recall`, then and now.** Open `hero/BST.h` and find `findFrom`: that recursive descent was Floor 9's `recall`. This week `recall` is one `map::find`. Name one thing you gained by switching and one thing you gave up.
+5. **The Phantom Key — try it.** In `countWeakness`, temporarily replace the two-line body with `return weaknessCounts_[w];` and build. Paste the first error line. **Then put the `find` version back and rebuild.** In your own words: (a) what does `[]` do when the key isn't in the map, and (b) why won't the compiler let you use it here?
+6. **Three views, one source.** After `strike Goblin`, `names` no longer lists Goblin, but `recall Goblin` (the Floor 9 tree command) still finds it. In one or two sentences: why is that correct, not a bug?
+7. **One-paragraph reflection.** The Registry keeps every name in alphabetical order whether you need it or not. Name one command from this week that *used* that order and one that didn't need it at all. If all you ever asked was "is this name here?", would keeping the order be worth paying for? (Floor 11 is about giving it up.)
 
 Your commit history should show at least three commits — Mon (`index`/`knows`), Wed (`recall`/`hasWeakness`/`countWeakness`), Fri (`forget` + lab notes).
 
